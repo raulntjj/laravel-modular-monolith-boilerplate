@@ -1,0 +1,395 @@
+{
+	"info": {
+		"_postman_id": "76f0f848-ad03-4fab-afc5-80fa8e7d3ffe",
+		"name": "BoilerPlate",
+		"description": "Collection para testar API do boilerplate com arquitetura DDD + CQRS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34921459",
+		"_collection_link": "https://morar-legal.postman.co/workspace/My-Workspace~70a6ab84-315b-4f89-854c-dfffcf9af18f/collection/34921459-76f0f848-ad03-4fab-afc5-80fa8e7d3ffe?action=share&source=collection_link&creator=34921459"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "API Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"status"
+							]
+						},
+						"description": "Verifica status da aplicação, database e cache"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users - Web",
+			"item": [
+				{
+					"name": "Get Users Pagination",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"users"
+							]
+						},
+						"description": "Lista todos os usuários sem paginação (use apenas para datasets pequenos)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users Options",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/users/options",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"users",
+								"options"
+							]
+						},
+						"description": "Lista todos os usuários sem paginação (use apenas para datasets pequenos)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"users",
+								"{{user_id}}"
+							]
+						},
+						"description": "Busca usuário específico por ID (Query com Cache)"
+					},
+					"response": []
+				},
+				{
+					"name": "Store User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.id) {",
+									"        pm.environment.set(\"user_id\", response.data.id);",
+									"        console.log(\"User ID salvo:\", response.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"surname\": \"Da Silva\",\n    \"email\": \"john.doe1@example.com\",\n    \"password\": \"secret123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"users"
+							]
+						},
+						"description": "Cria novo usuário (Command - invalida cache)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe Updated\",\n    \"email\": \"john.updated@example.com\",\n    \"password\": \"newsecret123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"users",
+								"{{user_id}}"
+							]
+						},
+						"description": "Atualização completa do usuário - todos os campos são obrigatórios (PUT)"
+					},
+					"response": []
+				},
+				{
+					"name": "Partial Update User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe Patched\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"users",
+								"{{user_id}}"
+							]
+						},
+						"description": "Atualização parcial - apenas os campos enviados são atualizados (PATCH)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"users",
+								"{{user_id}}"
+							]
+						},
+						"description": "Remove usuário por ID (Command - invalida cache)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users - Mobile",
+			"item": [
+				{
+					"name": "Get Users Cursed",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/mobile/v1/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"mobile",
+								"v1",
+								"users"
+							],
+							"query": [
+								{
+									"key": "cursor",
+									"value": "",
+									"description": "Cursor retornado pela resposta anterior (next_cursor)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Lista usuários com cursor pagination (ideal para mobile) - infinite scroll"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users Options",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/mobile/v1/users/options",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"mobile",
+								"v1",
+								"users",
+								"options"
+							],
+							"query": [
+								{
+									"key": "cursor",
+									"value": "",
+									"description": "Cursor retornado pela resposta anterior (next_cursor)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Lista usuários com cursor pagination (ideal para mobile) - infinite scroll"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8001",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "next_cursor",
+			"value": "",
+			"type": "string",
+			"description": "Cursor para próxima página (mobile)"
+		}
+	]
+}
