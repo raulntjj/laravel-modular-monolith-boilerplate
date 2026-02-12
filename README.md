@@ -1,6 +1,6 @@
-# 🚀 Laravel DDD + CQRS Boilerplate
+# Laravel Modular Monolith Boilerplate
 
-Boilerplate moderno para aplicações SaaS usando **Laravel Octane** com arquitetura **Modular Monolith** baseada em **Domain-Driven Design (DDD)** e **CQRS (Command Query Responsibility Segregation)**.
+Boilerplate moderno para aplicações SaaS usando **Laravel Octane** com arquitetura **Modular Monolith** baseada em **Domain-Driven Design (DDD)**.
 
 ## 📋 Sobre o Projeto
 
@@ -10,9 +10,9 @@ Este boilerplate foi desenvolvido para criar aplicações escaláveis e de alta 
 
 - 🏗️ **Modular Monolith**: Módulos independentes com baixo acoplamento
 - 🎯 **DDD (Domain-Driven Design)**: Camadas Domain, Application, Infrastructure e Interface
-- 🔄 **CQRS Pattern**: Separação entre Commands (write) e Queries (read)
+- 🔄 **CQRS Like**: Separação entre Commands (write) e Queries (read) com
 - ⚡ **Laravel Octane**: Alta performance com FrankenPHP
-- 🗄️ **Redis Cache**: Cache inteligente com invalidação automática
+- 🗄️ **Cache First**: Cache inteligente de queries
 - 📝 **Structured Logging**: Sistema de logs com 6 canais especializados
 - 🐳 **Docker Ready**: Ambiente completo com Docker Compose
 - 🧪 **Test-Driven**: Estrutura preparada para testes unitários e de integração
@@ -25,23 +25,6 @@ Este boilerplate foi desenvolvido para criar aplicações escaláveis e de alta 
 - **Redis 7** para cache e sessões
 - **Docker & Docker Compose** para ambiente de desenvolvimento
 - **PHPUnit** para testes
-
-## 📦 Estrutura do Projeto
-
-```
-modules/
-├── Shared/              # Componentes reutilizáveis
-│   ├── Domain/         # Contratos e interfaces
-│   ├── Application/    # Casos de uso compartilhados
-│   ├── Infrastructure/ # Cache, Logging, Persistence
-│   └── Interface/      # Respostas HTTP padronizadas
-│
-└── [Module]/           # Seus módulos de negócio
-    ├── Domain/         # Entities, ValueObjects, Contracts
-    ├── Application/    # Commands, Queries
-    ├── Infrastructure/ # Repositories, Providers
-    └── Interface/      # Controllers, Requests, Resources
-```
 
 ## 🚀 Quick Start
 
@@ -81,25 +64,9 @@ docker compose exec backend php artisan migrate
 
 ## 🏗️ Arquitetura
 
-### CQRS Pattern
-
+### Leitura e Escrita (CQRS Like)
 **Commands (Escrita)**
-```php
-// Modifica estado, invalida cache
-$command = new CreateUserCommand(
-    name: 'John Doe',
-    email: 'john@example.com',
-    password: 'secret'
-);
-$userId = $useCase->execute($command);
-```
-
 **Queries (Leitura)**
-```php
-// Apenas leitura, usa cache
-$query = new FindUserByIdQuery($userId);
-$user = $query->execute($query); // Cache-first
-```
 
 ### Camadas DDD
 
@@ -149,13 +116,13 @@ php artisan config:clear
 
 A arquitetura utiliza **containers isolados** para cada serviço, garantindo separação de responsabilidades e escalabilidade:
 
-| Serviço | Porta | Descrição | Propósito |
-|---------|-------|-----------|-----------|
-| **backend** | 8001 | Laravel Octane (FrankenPHP) | Aplicação principal |
-| **mysql** | 3306 | MySQL 8.0 | Banco de escrita |
-| **redis-cache** | 6379 | Redis 7 | Cache de aplicação (volátil, LRU) |
-| **redis-sessions** | 6380 | Redis 7 | Sessões de usuários (persistente, noeviction) |
-| **redis-queue** | 6381 | Redis 7 | Filas de jobs (persistente, noeviction) |
+| Serviço            | Porta | Descrição                   | Propósito                                     |
+|--------------------|-------|-----------------------------|-----------------------------------------------|
+| **backend**        | 8001  | Laravel Octane (FrankenPHP) | Aplicação principal                           |
+| **mysql**          | 3307  | MySQL 8.0                   | Banco de escrita                              |
+| **redis-cache**    | 6380  | Redis 7                     | Cache de aplicação (volátil, LRU)             |
+| **redis-sessions** | 6381  | Redis 7                     | Sessões de usuários (persistente, noeviction) |
+| **redis-queue**    | 6382  | Redis 7                     | Filas de jobs (persistente, noeviction)       |
 
 ### 🎯 Separação de Redis por Propósito
 
@@ -181,7 +148,7 @@ A arquitetura utiliza **containers isolados** para cada serviço, garantindo sep
 
 Documentação completa disponível na pasta `docs/`:
 
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitetura DDD + CQRS detalhada
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitetura DDD detalhada
 - **[DIAGRAMS.md](docs/DIAGRAMS.md)** - Diagramas de fluxo e estrutura
 - **[INFRASTRUCTURE.md](docs/INFRASTRUCTURE.md)** - Configuração Docker e serviços
 - **[COMMANDS.md](docs/COMMANDS.md)** - Comandos artisan disponíveis
@@ -194,22 +161,6 @@ Collection pronta para importar e testar a API:
 - **[Local.postman_environment.json](docs/postman/Local.postman_environment.json)** - Variáveis de ambiente
 - **[Instruções de uso](docs/postman/README.md)** - Como importar e usar
 
-**Endpoints Disponíveis:**
-
-### Web (Frontend Web)
-- ✅ GET `/api/web/v1/users` - Listar todos (sem paginação)
-- 📄 GET `/api/web/v1/users/paginated` - Paginação offset (navegação por páginas)
-- 👤 GET `/api/web/v1/users/{id}` - Buscar por ID (com cache)
-- ➕ POST `/api/web/v1/users` - Criar usuário
-
-### Mobile (Apps Mobile)
-- 📱 GET `/api/mobile/v1/users/paginated` - Paginação cursor (infinite scroll)
-- 🔄 Inclui script automático para salvar `next_cursor`
-
-### Testes de Cache
-- 🔄 Fluxo completo: MISS → HIT → Cache validation
-- 📊 Scripts para salvar IDs automaticamente
-- ⚡ Validação de performance (cache vs database)
 
 ## 🧪 Testes
 

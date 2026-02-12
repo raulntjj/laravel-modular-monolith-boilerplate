@@ -13,53 +13,6 @@ Este documento define o padrão para criação de endpoints separados para **Web
 3. **Estratégias de paginação**: Offset para web, Cursor para mobile
 4. **Evolução independente**: Mudanças em um não afetam o outro
 
-## 📁 Estrutura de Arquivos
-
-```
-modules/
-└── {Module}/
-    ├── Application/
-    │   ├── Queries/
-    │   │   ├── Find{Entity}ByIdQuery.php               # Busca por ID
-    │   │   ├── Find{Entity}OptionsQuery.php             # Options para selects (com search)
-    │   │   ├── Find{Entities}PaginatedQuery.php         # Offset (Web) com search/sort
-    │   │   └── Find{Entities}CursorPaginatedQuery.php   # Cursor (Mobile) com search/sort
-    │   ├── UseCases/
-    │   │   ├── Create{Entity}UseCase.php
-    │   │   ├── Update{Entity}UseCase.php
-    │   │   ├── PartialUpdate{Entity}UseCase.php
-    │   │   └── Delete{Entity}UseCase.php
-    │   └── DTOs/
-    │       ├── {Entity}DTO.php
-    │       ├── Create{Entity}DTO.php
-    │       └── Update{Entity}DTO.php
-    ├── Domain/
-    │   ├── Entities/
-    │   │   └── {Entity}.php
-    │   ├── Contracts/
-    │   │   └── {Entity}RepositoryInterface.php
-    │   └── ValueObjects/
-    ├── Infrastructure/
-    │   ├── Persistence/
-    │   │   ├── Eloquent/
-    │   │   │   └── {Entity}Model.php
-    │   │   ├── Migrations/
-    │   │   └── {Entity}Repository.php
-    │   └── Providers/
-    │       └── {Entity}ServiceProvider.php
-    ├── Interface/
-    │   ├── Http/
-    │   │   └── Controllers/
-    │   │       ├── {Entity}Controller.php          # Web
-    │   │       └── Mobile{Entity}Controller.php    # Mobile
-    │   └── Routes/
-    │       ├── web.php                             # Rotas Web
-    │       └── mobile.php                          # Rotas Mobile
-    └── Tests/
-        ├── Unit/
-        ├── Feature/
-        └── Integration/
-```
 
 ## 🌐 Padrão de Rotas
 
@@ -116,20 +69,20 @@ Route::prefix('{resource}')->group(function () {
 ### URLs Finais
 
 **Web:**
-| Método | URL | Controller |
-|--------|-----|------------|
-| GET    | `/api/web/v1/users` | `UserController@index` |
-| GET    | `/api/web/v1/users/options` | `UserController@options` |
-| GET    | `/api/web/v1/users/{id}` | `UserController@show` |
-| POST   | `/api/web/v1/users` | `UserController@store` |
-| PUT    | `/api/web/v1/users/{id}` | `UserController@update` |
-| PATCH  | `/api/web/v1/users/{id}` | `UserController@partialUpdate` |
-| DELETE | `/api/web/v1/users/{id}` | `UserController@destroy` |
+| Método | URL                         | Controller                     |
+|--------|-----------------------------|--------------------------------|
+| GET    | `/api/web/v1/users`         | `UserController@index`         |
+| GET    | `/api/web/v1/users/options` | `UserController@options`       |
+| GET    | `/api/web/v1/users/{id}`    | `UserController@show`          |
+| POST   | `/api/web/v1/users`         | `UserController@store`         |
+| PUT    | `/api/web/v1/users/{id}`    | `UserController@update`        |
+| PATCH  | `/api/web/v1/users/{id}`    | `UserController@partialUpdate` |
+| DELETE | `/api/web/v1/users/{id}`    | `UserController@destroy`       |
 
 **Mobile:**
-| Método | URL | Controller |
-|--------|-----|------------|
-| GET    | `/api/mobile/v1/users` | `MobileUserController@index` |
+| Método | URL                            | Controller                     |
+|--------|--------------------------------|--------------------------------|
+| GET    | `/api/mobile/v1/users`         | `MobileUserController@index`   |
 | GET    | `/api/mobile/v1/users/options` | `MobileUserController@options` |
 
 ## 🔍 Busca e Ordenação
@@ -199,13 +152,13 @@ GET /api/mobile/v1/{resource}/options?search=termo
 
 ### 3. CRUD (apenas Web)
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| POST   | `/{resource}` | Criar |
-| GET    | `/{resource}/{id}` | Detalhe |
+| Método | Endpoint           | Descrição            |
+|--------|--------------------|----------------------|
+| POST   | `/{resource}`      | Criar                |
+| GET    | `/{resource}/{id}` | Detalhe              |
 | PUT    | `/{resource}/{id}` | Atualizar (completo) |
-| PATCH  | `/{resource}/{id}` | Atualizar (parcial) |
-| DELETE | `/{resource}/{id}` | Deletar |
+| PATCH  | `/{resource}/{id}` | Atualizar (parcial)  |
+| DELETE | `/{resource}/{id}` | Deletar              |
 
 ## 🏗️ Criando um Novo Módulo
 
