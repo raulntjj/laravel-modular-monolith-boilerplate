@@ -7,7 +7,7 @@ Ambiente completo com **5 containers isolados**:
 ```yaml
 services:
   - backend           # Laravel Octane com FrankenPHP
-  - mysql-write       # MySQL 8.0 - Banco de escrita
+  - mysql       # MySQL 8.0 - Banco de escrita
   - redis-cache       # Redis 7 - Cache de aplicação
   - redis-sessions    # Redis 7 - Sessões de usuários
   - redis-queue       # Redis 7 - Filas de jobs
@@ -61,7 +61,7 @@ docker compose exec backend bash
 - **Healthcheck**: Verifica `/api/status` a cada 10s
 
 ### MySQL Write
-- **Host**: localhost (ou `mysql-write` internamente)
+- **Host**: localhost (ou `mysql` internamente)
 - **Porta**: 3306
 - **Database**: boilerplate
 - **User**: boilerplate_user
@@ -70,7 +70,7 @@ docker compose exec backend bash
 
 #### Conectar via CLI
 ```bash
-docker compose exec mysql-write mysql -u boilerplate_user -p
+docker compose exec mysql mysql -u boilerplate_user -p
 # Password: boilerplate_secret
 ```
 
@@ -277,10 +277,10 @@ Resposta:
 {-write
 
 # Ver logs do MySQL
-docker compose logs mysql-write
+docker compose logs mysql
 
 # Testar conexão
-docker compose exec mysql-write mysqladmin ping
+docker compose exec mysql mysqladmin ping
 ```
 
 ### Erro de conexão com Redis

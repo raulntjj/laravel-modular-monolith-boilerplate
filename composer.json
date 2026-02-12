@@ -2,8 +2,8 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Backend Boilerplate for Laravel 12 with Octane, Swoole, and RoadRunner support.",
+    "keywords": ["swoole", "roadrunner", "octane", "laravel", "backend", "boilerplate"],
     "license": "MIT",
     "require": {
         "php": "^8.2",

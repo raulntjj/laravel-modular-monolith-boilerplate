@@ -152,7 +152,7 @@ A arquitetura utiliza **containers isolados** para cada serviço, garantindo sep
 | Serviço | Porta | Descrição | Propósito |
 |---------|-------|-----------|-----------|
 | **backend** | 8001 | Laravel Octane (FrankenPHP) | Aplicação principal |
-| **mysql-write** | 3306 | MySQL 8.0 | Banco de escrita |
+| **mysql** | 3306 | MySQL 8.0 | Banco de escrita |
 | **redis-cache** | 6379 | Redis 7 | Cache de aplicação (volátil, LRU) |
 | **redis-sessions** | 6380 | Redis 7 | Sessões de usuários (persistente, noeviction) |
 | **redis-queue** | 6381 | Redis 7 | Filas de jobs (persistente, noeviction) |
@@ -197,13 +197,13 @@ Collection pronta para importar e testar a API:
 **Endpoints Disponíveis:**
 
 ### Web (Frontend Web)
-- ✅ GET `/web/api/users` - Listar todos (sem paginação)
-- 📄 GET `/web/api/users/paginated` - Paginação offset (navegação por páginas)
-- 👤 GET `/web/api/users/{id}` - Buscar por ID (com cache)
-- ➕ POST `/web/api/users` - Criar usuário
+- ✅ GET `/api/web/v1/users` - Listar todos (sem paginação)
+- 📄 GET `/api/web/v1/users/paginated` - Paginação offset (navegação por páginas)
+- 👤 GET `/api/web/v1/users/{id}` - Buscar por ID (com cache)
+- ➕ POST `/api/web/v1/users` - Criar usuário
 
 ### Mobile (Apps Mobile)
-- 📱 GET `/mobile/api/users/paginated` - Paginação cursor (infinite scroll)
+- 📱 GET `/api/mobile/v1/users/paginated` - Paginação cursor (infinite scroll)
 - 🔄 Inclui script automático para salvar `next_cursor`
 
 ### Testes de Cache

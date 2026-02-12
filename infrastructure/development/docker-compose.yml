@@ -18,17 +18,22 @@ services:
     environment:
       - APP_ENV=${APP_ENV:-local}
       - APP_DEBUG=${APP_DEBUG:-true}
-      - DB_HOST=mysql-write
+
+      - DB_HOST=mysql
       - DB_PORT=3306
       - DB_DATABASE=${DB_DATABASE:-boilerplate}
       - DB_USERNAME=${DB_USERNAME:-root}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
+
       - REDIS_CACHE_HOST=redis-cache
-      - REDIS_CACHE_PORT=6379
+      - REDIS_CACHE_PORT=${REDIS_CACHE_PORT:-6380}
+
       - REDIS_SESSION_HOST=redis-sessions
-      - REDIS_SESSION_PORT=6380
+      - REDIS_SESSION_PORT=${REDIS_SESSION_PORT:-6381}
+
       - REDIS_QUEUE_HOST=redis-queue
-      - REDIS_QUEUE_PORT=6381
+      - REDIS_QUEUE_PORT=${REDIS_QUEUE_PORT:-6382}
+      
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
       - QUEUE_CONNECTION=redis
@@ -36,7 +41,7 @@ services:
     networks:
       - boilerplate-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/status"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -82,56 +87,75 @@ services:
     container_name: boilerplate-redis-cache
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_CACHE_PORT:-6380}:6379"
     volumes:
       - redis-cache-data:/data
       - ./redis/cache.conf:/usr/local/etc/redis/redis.conf
     networks:
       - boilerplate-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-p", "${REDIS_CACHE_PORT:-6380}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    command: redis-server /usr/local/etc/redis/redis.conf
-
+    command: redis-server /usr/local/etc/redis/redis.conf --port ${REDIS_CACHE_PORT:-6380}
   # Redis Sessions - User Sessions
   redis-sessions:
     image: redis:7-alpine
     container_name: boilerplate-redis-sessions
     restart: unless-stopped
     ports:
-      - "6380:6380"
+      - "${REDIS_SESSION_PORT:-6381}:6379"
     volumes:
       - redis-sessions-data:/data
       - ./redis/sessions.conf:/usr/local/etc/redis/redis.conf
     networks:
       - boilerplate-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-p", "6380", "ping"]
+      test: ["CMD", "redis-cli", "-p", "${REDIS_SESSION_PORT:-6381}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    command: redis-server /usr/local/etc/redis/redis.conf --port 6380
-
+    command: redis-server /usr/local/etc/redis/redis.conf --port ${REDIS_SESSION_PORT:-6381}
   # Redis Queue - Background Jobs
   redis-queue:
     image: redis:7-alpine
     container_name: boilerplate-redis-queue
     restart: unless-stopped
     ports:
-      - "6381:6381"
+      - "${REDIS_QUEUE_PORT:-6382}:6379"
     volumes:
       - redis-queue-data:/data
       - ./redis/queue.conf:/usr/local/etc/redis/redis.conf
     networks:
       - boilerplate-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-p", "6381", "ping"]
+      test: ["CMD", "redis-cli", "-p", "${REDIS_QUEUE_PORT:-6382}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    command: redis-server /usr/local/etc/redis/redis.conf --port 6381
+    command: redis-server /usr/local/etc/redis/redis.conf --port ${REDIS_QUEUE_PORT:-6382}
+
+  # Redis Commander - Redis Management Interface
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: boilerplate-redis-commander
+    restart: unless-stopped
+    ports:
+      - "${REDIS_COMMANDER_PORT:-8081}:8081"
+    environment:
+      - REDIS_HOSTS=cache:redis-cache:6380,sessions:redis-sessions:6381,queue:redis-queue:6382
+      - HTTP_USER=${REDIS_COMMANDER_USER:-admin}
+      - HTTP_PASSWORD=${REDIS_COMMANDER_PASSWORD:-secret}
+    networks:
+      - boilerplate-network
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+      redis-sessions:
+        condition: service_healthy
+      redis-queue:
+        condition: service_healthy
 
 networks:
   boilerplate-network:

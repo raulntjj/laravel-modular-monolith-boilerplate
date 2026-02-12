@@ -2,7 +2,7 @@
 
 ## 📋 Visão Geral
 
-Monolito Modular com **DDD** (Domain-Driven Design) + **CQRS** (Command Query Responsibility Segregation) usando Laravel Octane para alta performance.
+Monolito Modular com **DDD** (Domain-Driven Design) usando Laravel Octane para alta performance.
 
 ## 🏗️ Estrutura de Camadas
 
@@ -89,7 +89,7 @@ final readonly class FindUserByIdQuery
 - **Requests**: Validação de entrada
 - **Resources**: Formatação de saída
 
-## 🔄 CQRS Pattern
+## 🔄 Estrutura de Cache
 
 Separação entre **Commands** (escrita) e **Queries** (leitura):
 
@@ -99,7 +99,7 @@ Separação entre **Commands** (escrita) e **Queries** (leitura):
 ### Exemplo de Command (Escrita)
 
 ```php
-// POST /web/api/users
+// POST /api/web/v1/users
 $command = new CreateUserCommand(
     name: 'John Doe',
     email: 'john@example.com',
@@ -116,7 +116,7 @@ $userId = $useCase->execute($command);
 ### Exemplo de Query (Leitura)
 
 ```php
-// GET /web/api/users/{id}
+// GET /api/web/v1/users/{id}
 $query = new FindUserByIdQuery($userId);
 $user = $query->execute();
 // 1. Busca no Redis Cache primeiro
@@ -129,15 +129,15 @@ $user = $query->execute();
 
 **Web (Offset Pagination)**
 ```php
-GET /web/api/users              # Todos sem paginação
-GET /web/api/users/paginated    # Paginação offset (page, per_page)
-GET /web/api/users/{id}         # Buscar por ID (cache)
-POST /web/api/users             # Criar usuário
+GET /api/web/v1/users               # Todos sem paginação
+GET /api/web/v1/users/paginated     # Paginação offset (page, per_page)
+GET /api/web/v1/users/{id}          # Buscar por ID (cache)
+POST /api/web/v1/users              # Criar usuário
 ```
 
 **Mobile (Cursor Pagination)**
 ```php
-GET /mobile/api/users/paginated  # Paginação cursor (infinite scroll)
+GET /api/mobile/v1/users/paginated  # Paginação cursor (infinite scroll)
 ```
 $command = new CreateUserCommand(
     name: 'John Doe',
@@ -180,7 +180,7 @@ Módulo exemplo com CRUD completo:
 
 ```
 boilerplate/
-├── modules/                    # Módulos da aplicação
+├── modules/                   # Módulos da aplicação
 │   ├── Shared/                # Componentes compartilhados
 │   │   ├── Domain/
 │   │   │   └── Contracts/
@@ -207,28 +207,25 @@ boilerplate/
 │           └── Http/
 │
 ├── infrastructure/            # Infraestrutura
-│   └── development/          # Docker para desenvolvimento
+│   └── development/           # Docker para desenvolvimento
 │       ├── docker-compose.yml
 │       ├── Dockerfile
 │       ├── mysql/
 │       ├── redis/
 │       └── php/
 │
-├── Routes/                   # Rotas da aplicação
-│   └── api.php
-│
-├── config/                   # Configurações
+├── config/                    # Configurações
 │   ├── octane.php
 │   └── ...
 │
-├── bootstrap/                # Bootstrap da aplicação
+├── bootstrap/                 # Bootstrap da aplicação
 │   └── app.php
 │
-├── storage/                  # Armazenamento
+├── storage/                   # Armazenamento
 │   ├── logs/
 │   └── framework/
 │
-└── docs/                     # Documentação
+└── docs/                      # Documentação
     ├── ARCHITECTURE.md
     ├── DIAGRAMS.md
     ├── INFRASTRUCTURE.md

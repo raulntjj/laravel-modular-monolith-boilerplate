@@ -6,7 +6,7 @@
 ┌─────────────┐
 │   Client    │
 └──────┬──────┘
-       │ POST /web/api/users
+       │ POST /api/web/v1/users
        │ { name, email, password }
        ▼
 ┌────────────────────────┐
@@ -48,7 +48,7 @@
 ┌─────────────┐
 │   Client    │
 └──────┬──────┘
-       │ GET /web/api/users/{id}
+       │ GET /api/web/v1/users/{id}
        ▼
 ┌────────────────────────┐
 │  UserController        │
@@ -91,7 +91,7 @@
 └─────────────────────────────────────────────────────┘
 
    Client Request:
-   GET /web/api/users/paginated?page=2&per_page=15
+   GET /api/web/v1/users/paginated?page=2&per_page=15
    
    ┌──────────────────┐
    │ FindUsersPaginated│
@@ -110,7 +110,7 @@
        "per_page": 15,
        "total": 150,
        "last_page": 10,
-       "next_url": "/web/api/users/paginated?page=3"
+       "next_url": "/api/web/v1/users/paginated?page=3"
      }
    }
 
@@ -119,7 +119,7 @@
 └─────────────────────────────────────────────────────┘
 
    Client Request:
-   GET /mobile/api/users/paginated?per_page=20&cursor={base64}
+   GET /api/mobile/v1/users/paginated?per_page=20&cursor={base64}
    
    ┌──────────────────┐
    │FindUsersCursor   │
