@@ -52,7 +52,7 @@ final class MobileUserController extends Controller
     {
         try {
             $cursor = $request->query('cursor');
-            $perPage = (int) ($request->query('per_page') ?? 20);
+            $perPage = (int) ($request->query('per_page') ?? 10);
 
             $search = SearchDTO::fromRequest(
                 $request->query(),
@@ -64,19 +64,9 @@ final class MobileUserController extends Controller
                 self::SORTABLE_COLUMNS
             );
 
-            $paginator = $this->findUsersCursorPaginatedQuery->execute($cursor, $perPage, $search, $sort);
+            $result = $this->findUsersCursorPaginatedQuery->execute($cursor, $perPage, $search, $sort);
 
-            $usersData = array_map(
-                fn(UserDTO $user) => $user->toArray(),
-                $paginator->items()
-            );
-
-            $pagination = CursorPaginationDTO::fromCursorPaginator($paginator);
-
-            return ApiResponse::success([
-                'users' => $usersData,
-                'pagination' => $pagination->toArray(),
-            ], 'Users retrieved successfully');
+            return ApiResponse::success($result, 'Users retrieved successfully');
         } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage());
         }

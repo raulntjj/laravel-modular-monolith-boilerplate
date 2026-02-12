@@ -110,6 +110,7 @@ final readonly class FindUsersPaginatedQuery
                 3600, // 1 hora (mesmo TTL do FindUserByIdQuery)
                 function () use ($userId) {
                     $userData = DB::table('users')
+                        ->select(['id', 'name', 'surname', 'email', 'profile_path', 'created_at', 'updated_at'])
                         ->where('id', $userId)
                         ->first();
                     

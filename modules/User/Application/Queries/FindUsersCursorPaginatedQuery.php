@@ -33,7 +33,7 @@ final readonly class FindUsersCursorPaginatedQuery
         int $perPage = self::DEFAULT_PER_PAGE,
         ?SearchDTO $search = null,
         ?SortDTO $sort = null,
-    ): CursorPaginator {
+    ): array {
         $startTime = microtime(true);
 
         $this->logger()->debug('Finding users with cursor pagination', [
@@ -43,7 +43,8 @@ final readonly class FindUsersCursorPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        $query = DB::table('users');
+        $query = DB::table('users')
+            ->select(['id', 'name', 'surname', 'email', 'profile_path', 'created_at', 'updated_at']);
 
         // Aplica busca
         if ($search !== null && $search->hasSearch()) {
@@ -72,21 +73,20 @@ final readonly class FindUsersCursorPaginatedQuery
             cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
         );
 
-        // Transforma os dados em DTOs usando cache individual
-        $paginator->through(function ($userData) {
+        $usersData = [];
+        foreach ($paginator->items() as $userData) {
             $userCacheKey = "user:{$userData->id}";
             
-            // Tenta buscar do cache individual
-            $cachedUserData = $this->cache()->remember(
+            $cachedUser = $this->cache()->remember(
                 $userCacheKey,
-                3600, // 1 hora (mesmo TTL do FindUserByIdQuery)
+                3600,
                 function () use ($userData) {
-                    return (array) $userData;
+                    return UserDTO::fromDatabase($userData)->toArray();
                 }
             );
-
-            return UserDTO::fromDatabase($cachedUserData);
-        });
+            
+            $usersData[] = $cachedUser;
+        }
 
         $duration = microtime(true) - $startTime;
 
@@ -98,6 +98,14 @@ final readonly class FindUsersCursorPaginatedQuery
             'duration_ms' => round($duration * 1000, 2),
         ]);
 
-        return $paginator;
+        return [
+            'users' => $usersData,
+            'pagination' => [
+                'next_cursor' => $paginator->nextCursor()?->encode(),
+                'prev_cursor' => $paginator->previousCursor()?->encode(),
+                'has_more' => $paginator->hasMorePages(),
+                'per_page' => $paginator->perPage(),
+            ],
+        ];
     }
 }
