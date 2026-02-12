@@ -10,30 +10,17 @@ Cada módulo segue a estrutura de 4 camadas:
 
 ```
 modules/
-├── Shared/              # Componentes reutilizáveis
+├── Shared/
 │   ├── Domain/
-│   │   └── Contracts/
 │   ├── Application/
 │   ├── Infrastructure/
-│   │   ├── Cache/
-│   │   ├── Logging/
-│   │   └── Persistence/
 │   └── Interface/
 │
 └── User/                # Exemplo de módulo
     ├── Domain/          # 1. Regras de negócio puras
-    │   ├── Entities/
-    │   ├── ValueObjects/
-    │   └── Contracts/
     ├── Application/     # 2. Casos de uso
-    │   ├── Commands/    # Write operations
-    │   └── Queries/     # Read operations
     ├── Infrastructure/  # 3. Implementação técnica
-    │   ├── Persistence/
-    │   └── Providers/
     └── Interface/       # 4. Pontos de entrada
-        └── Http/
-            └── Controllers/
 ```
 
 ## 🎯 Princípios DDD
@@ -59,26 +46,6 @@ final readonly class User
 - **Commands**: Operações de escrita (CREATE, UPDATE, DELETE)
 - **Queries**: Operações de leitura (SELECT)
 
-```php
-// Application/Commands/CreateUserCommand.php
-final readonly class CreateUserCommand
-{
-    public function __construct(
-        public string $name,
-        public string $email,
-        public string $password
-    ) {}
-}
-
-// Application/Queries/FindUserByIdQuery.php
-final readonly class FindUserByIdQuery
-{
-    public function __construct(
-        public string $userId
-    ) {}
-}
-```
-
 ### Infrastructure Layer (Implementação)
 - **Repositories**: Persistência de dados
 - **Services**: Serviços de infraestrutura
@@ -96,35 +63,6 @@ Separação entre **Commands** (escrita) e **Queries** (leitura):
 - **Commands**: Modificam estado, invalidam cache
 - **Queries**: Apenas leitura, usam cache com Redis
 
-### Exemplo de Command (Escrita)
-
-```php
-// POST /api/web/v1/users
-$command = new CreateUserCommand(
-    name: 'John Doe',
-    email: 'john@example.com',
-    password: 'secret123'
-);
-
-$userId = $useCase->execute($command);
-// 1. Valida dados
-// 2. Cria entidade User
-// 3. Persiste no MySQL
-// 4. Invalida cache relacionado
-```
-
-### Exemplo de Query (Leitura)
-
-```php
-// GET /api/web/v1/users/{id}
-$query = new FindUserByIdQuery($userId);
-$user = $query->execute();
-// 1. Busca no Redis Cache primeiro
-// 2. Se cache MISS, busca no MySQL
-// 3. Armazena resultado no Redis
-// 4. Retorna usuário
-```
-
 ### Endpoints Separados por Plataforma
 
 **Web (Offset Pagination)**
@@ -138,17 +76,6 @@ POST /api/web/v1/users              # Criar usuário
 **Mobile (Cursor Pagination)**
 ```php
 GET /api/mobile/v1/users/paginated  # Paginação cursor (infinite scroll)
-```
-$command = new CreateUserCommand(
-    name: 'John Doe',
-    email: 'john@example.com',
-    password: 'secret'
-);
-$userId = $this->createUserUseCase->execute($command);
-
-// Query - Leitura (com cache)
-$query = new FindUserByIdQuery($userId);
-$user = $this->findUserByIdQuery->execute($query);
 ```
 
 ## 📦 Módulos
@@ -198,12 +125,12 @@ boilerplate/
 │       │   ├── ValueObjects/
 │       │   └── Contracts/
 │       ├── Application/
-│       │   ├── Commands/
+│       │   ├── UseCases (Command)/
 │       │   └── Queries/
 │       ├── Infrastructure/
 │       │   ├── Persistence/
 │       │   └── Providers/
-│       └── Interface/
+│       └── Interface/         # Ponto de Entrada
 │           └── Http/
 │
 ├── infrastructure/            # Infraestrutura
@@ -238,6 +165,6 @@ boilerplate/
 2. **Testabilidade**: Domain puro, fácil de testar
 3. **Escalabilidade**: Módulos independentes
 4. **Manutenibilidade**: Código organizado e desacoplado
-5. **Performance**: CQRS + Cache otimizam leituras
+5. **Performance**: Cache otimizam leituras
 6. **Flexibilidade**: Fácil adicionar novos módulos
 

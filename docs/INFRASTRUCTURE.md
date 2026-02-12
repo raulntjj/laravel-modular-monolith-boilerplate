@@ -7,7 +7,7 @@ Ambiente completo com **5 containers isolados**:
 ```yaml
 services:
   - backend           # Laravel Octane com FrankenPHP
-  - mysql       # MySQL 8.0 - Banco de escrita
+  - mysql             # MySQL 8.0 - Banco de escrita
   - redis-cache       # Redis 7 - Cache de aplicação
   - redis-sessions    # Redis 7 - Sessões de usuários
   - redis-queue       # Redis 7 - Filas de jobs
@@ -58,7 +58,7 @@ docker compose exec backend bash
   - Hot reload automático
   - HTTP/2 e HTTP/3
   - Alta performance
-- **Healthcheck**: Verifica `/api/status` a cada 10s
+- **Healthcheck**: Verifica `/status` a cada 10s
 
 ### MySQL Write
 - **Host**: localhost (ou `mysql` internamente)
