@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Unit\Domain\Entities;
 
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
 use Ramsey\Uuid\Uuid;
 use Modules\User\Domain\Entities\User;
 use Modules\User\Domain\ValueObjects\Email;

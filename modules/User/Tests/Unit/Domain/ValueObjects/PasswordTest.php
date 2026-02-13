@@ -6,7 +6,7 @@ namespace Modules\User\Tests\Unit\Domain\ValueObjects;
 
 use InvalidArgumentException;
 use Modules\User\Domain\ValueObjects\Password;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
 
 final class PasswordTest extends TestCase
 {
