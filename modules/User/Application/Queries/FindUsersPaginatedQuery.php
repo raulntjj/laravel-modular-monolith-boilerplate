@@ -104,7 +104,7 @@ final readonly class FindUsersPaginatedQuery
         $users = [];
         foreach ($result['ids'] as $userId) {
             $userCacheKey = "user:{$userId}";
-            
+
             $userData = $this->cache()->remember(
                 $userCacheKey,
                 3600, // 1 hora (mesmo TTL do FindUserByIdQuery)
@@ -112,7 +112,7 @@ final readonly class FindUsersPaginatedQuery
                     $userData = DB::table('users')
                         ->where('id', $userId)
                         ->first();
-                    
+
                     return $userData ? (array) $userData : null;
                 }
             );

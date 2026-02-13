@@ -40,7 +40,7 @@ final class MobileUserController extends Controller
     /**
      * GET /api/mobile/v1/users
      * Lista usuários com cursor pagination, busca e ordenação (mobile)
-     * 
+     *
      * Query params:
      * - cursor: cursor para próxima página (opcional)
      * - per_page: itens por página (default: 20)
@@ -67,7 +67,7 @@ final class MobileUserController extends Controller
             $paginator = $this->findUsersCursorPaginatedQuery->execute($cursor, $perPage, $search, $sort);
 
             $usersData = array_map(
-                fn(UserDTO $user) => $user->toArray(),
+                fn (UserDTO $user) => $user->toArray(),
                 $paginator->items()
             );
 
@@ -85,7 +85,7 @@ final class MobileUserController extends Controller
     /**
      * GET /api/mobile/v1/users/options
      * Lista opções de usuários para selects/autocompletes (mobile)
-     * 
+     *
      * Query params:
      * - search: termo de busca (busca em name e email)
      */
@@ -100,7 +100,7 @@ final class MobileUserController extends Controller
             $users = $this->findUserOptionsQuery->execute($search);
 
             $usersData = array_map(
-                fn(UserDTO $user) => $user->toOptions(),
+                fn (UserDTO $user) => $user->toOptions(),
                 $users
             );
 

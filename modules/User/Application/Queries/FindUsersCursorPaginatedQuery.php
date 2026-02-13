@@ -75,7 +75,7 @@ final readonly class FindUsersCursorPaginatedQuery
         // Transforma os dados em DTOs usando cache individual
         $paginator->through(function ($userData) {
             $userCacheKey = "user:{$userData->id}";
-            
+
             // Tenta buscar do cache individual
             $cachedUserData = $this->cache()->remember(
                 $userCacheKey,

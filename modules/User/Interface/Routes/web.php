@@ -17,7 +17,7 @@ Route::prefix('users')->group(function () {
 
     // Opções para selects/autocompletes
     Route::get('/options', [UserController::class, 'options']);
-    
+
     // CRUD
     Route::post('/', [UserController::class, 'store']);
     Route::get('/{id}', [UserController::class, 'show']);

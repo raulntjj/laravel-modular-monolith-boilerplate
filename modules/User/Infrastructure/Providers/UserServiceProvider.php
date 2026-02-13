@@ -28,7 +28,7 @@ final class UserServiceProvider extends ServiceProvider
         // Rotas Mobile com prefixo '/api/mobile/v1'
         Route::prefix('/api/mobile/v1')
             ->group(__DIR__ . '/../../Interface/Routes/mobile.php');
-        
+
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
     }
 }
